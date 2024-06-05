@@ -139,7 +139,7 @@ function task_mriqc_participant {
     task_mriqc_cmd=$(echo "docker run --rm -u $(id -u) \
     -v ${cwd}/${bids_dir}:/data \
     -v ${cwd}/mriqc:/out \
-    nipreps/mriqc:latest \
+    nipreps/mriqc:${mriqc_version} \
     --participant_label $BIDS_participant \
     $mriqc_options \
     --n_procs $ncpu_mriqc --ants-nthreads $ncpu_mriqc_ants --mem_gb $mem_gb \
@@ -966,6 +966,12 @@ if [ $expert -eq 1 ]; then
     kul_echo "  do_mriqc: $do_mriqc"
     
     if [ $do_mriqc -eq 1 ]; then
+
+        mriqc_version=$(grep mriqc_version $conf | grep -v \# | cut -d':' -f 2-1000)
+        mriqc_version="$(echo -e "${mriqc_version}" | tr -d '[:space:]')" #remove all whitespaces
+        if [ -z "$mriqc_version" ]; then
+            mriqc_version=latest
+        fi 
 
         mriqc_options=$(grep mriqc_options $conf | grep -v \# | cut -d':' -f 2 | tr -d '\r')
 
