@@ -186,14 +186,14 @@ mrcalc $T1w_in $T1w_min -sub $T1w_factor -div Karawun/sub-${participant}/T1w.nii
 #if [ $type -eq 1 ]; then
 
     tract_name_orig="AF_all_LT"
-    tract_name_final="Arcutate_Fasc_Left"
+    tract_name_final="Arcuate_Fasc_Left"
     tract_color=1
     tract_threshold=20
     tract_corr_threshold=3
     KUL_karawun_get_tract
 
     tract_name_orig="AF_all_RT"
-    tract_name_final="Arcutate_Fasc_Right"
+    tract_name_final="Arcuate_Fasc_Right"
     tract_color=2
     tract_threshold=20
     tract_corr_threshold=3
@@ -408,6 +408,21 @@ mrcalc $T1w_in $T1w_min -sub $T1w_factor -div Karawun/sub-${participant}/T1w.nii
     tract_name_final="CSHDP_Right"
     tract_color=26
     tract_threshold=40
+    tract_corr_threshold=1
+    KUL_karawun_get_tract
+
+
+    tract_name_orig="ThR_Ant_LT"
+    tract_name_final="ThR_Ant_LT"
+    tract_color=27
+    tract_threshold=20
+    tract_corr_threshold=1
+    KUL_karawun_get_tract
+
+    tract_name_orig="ThR_Ant_RT"
+    tract_name_final="ThR_Ant_RT"
+    tract_color=28
+    tract_threshold=20
     tract_corr_threshold=1
     KUL_karawun_get_tract
 

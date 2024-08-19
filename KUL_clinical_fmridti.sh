@@ -666,7 +666,8 @@ function KUL_run_fmriprep {
         sed -i.bck "s/BIDS_participants: /BIDS_participants: ${participant}/" KUL_LOG/sub-${participant}_run_fmriprep.txt
         rm -f KUL_LOG/sub-${participant}_run_fmriprep.txt.bck
         if [ $n_fMRI -gt 0 ]; then
-            fmriprep_options="--fs-no-reconall --use-aroma --use-syn-sdc "
+            #fmriprep_options="--fs-no-reconall --use-aroma --use-syn-sdc "
+            fmriprep_options="--fs-no-reconall --use-syn-sdc "
         else
             fmriprep_options="--fs-no-reconall --anat-only "
         fi
@@ -899,10 +900,17 @@ function KUL_segment_tumor {
             if [ -f $lesion_png ]; then
                 cp -f $lesion_png REPORT/sub-${participant}_01_tumor_segment.png
             fi
-        else
-            echo "Tumor segmentation already done"
+            if [ $vbg -gt 0 ]; then
+                if [ $vbg -eq 1 ]; then
+                    vbg_lesion="$derivativesdir/KUL_anat_segment_tumor/sub-${participant}_lesion_and_cavity.nii.gz"
+                elif [ $vbg -eq 2 ]; then
+                    vbg_lesion="$derivativesdir/KUL_anat_segment_tumor/sub-${participant}_lesion_and_cavity.nii.gz"
+                elif [ $vbg -eq 3 ]; then
+                    vbg_lesion="${cwd}/RESULTS/sub-${participant}/Lesion/lesion.nii.gz"
+                fi
+                cp $vbg_lesion BIDS/sub-${participant}/anat/sub-${participant}_T1w_label-lesion_roi.nii.gz
+            fi
         fi
-
     fi
 
 }

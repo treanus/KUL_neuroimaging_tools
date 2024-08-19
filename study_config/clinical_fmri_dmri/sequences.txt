@@ -2,7 +2,7 @@
 T1w,T1_PRE
 T1w,T1W_PRE
 cT1w,T1_Post
-cT1w,T1_POST
+cT1w,POST
 cT1w,T1W_Gd
 FLAIR,3D_FLAIR
 T2w,3D_T2
@@ -23,8 +23,7 @@ func,MB2_L,LIP,2,j
 func,MB3_L,LIP,3,j
 func,MB2_T,TAAL,2,j
 func,MB3_T,TAAL,3,j
-#func,MB3_HOPLA,TAAL,3,j
-#func,Hopla_TR3,TAAL,1,j
+func,rsfMRI_MB3,rest,3,j
 sbref,SB_Ref,HAND LIP FOOT TAAL,1,j
 dwi,p1_b1200,-,3,j-,b1200
 #dwi,p2_b0,-,3,j-,b0
@@ -33,6 +32,9 @@ dwi,p3_b2500,-,3,j-,b2500
 dwi,p4_b2500,-,3,j,rev
 dwi,128d_2500,-,3,j-,b2500
 dwi,128d_1200,-,3,j-,b1200
+dwi,128d_1sh,-,3,j-,epic
 dwi,rev_1200,-,3,j,rev
 dwi,dMRI_Linear_AP,-,2,j-,ap
 dwi,dMRI_Linear_PA,-,2,j,pa
+dwi,rev_2sh,-,3,j,rev
+dwi,128d_2sh,-,3,j-,b2500

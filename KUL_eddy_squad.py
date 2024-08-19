@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# our alternative version of eddy_squad
+# Stefan Sunaert - 05/06/2024
+
 import os
 import sys
 import json

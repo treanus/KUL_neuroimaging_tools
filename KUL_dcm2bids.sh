@@ -857,8 +857,21 @@ if [ -d DICOM ]; then
     n_sb=${#sb[@]}
     if [ $n_sb -gt 0 ]; then
         # find the largest .dcm
-        sb_dcm=$(find -L "${sb[0]}" -type f -printf '%s %p\n' | sort -nr | head -n 1 | awk -F/ '{ print $NF }')
-        cp -f "${sb[0]}/$sb_dcm" "DICOM/smartbrain.dcm"
+        sb_dcm=($(find -L "${sb[0]}" -type f -printf '%s %p\n' | sort -nr | awk -F/ '{ print $NF }'))
+        # skip if not an original
+        for sb_dcm1 in ${sb_dcm[@]}; do
+            #echo ${sb[0]}/$sb_dcm1
+            dcm_imagetype=$(dcminfo "${sb[0]}/$sb_dcm1" -tag 0008 0008 2>/dev/null | cut -c 13- | head -n 1)
+            #echo $dcm_imagetype
+            if [[ ! -z "$dcm_imagetype" ]]; then 
+            #    echo "$sb_dcm1 imagetype not empty"
+                cp -f "${sb[0]}/$sb_dcm1" "DICOM/smartbrain.dcm"
+                break
+            #else 
+            #    echo "$sb_dcm1 imagetype is empty"
+            fi 
+        done
+        
     fi
 fi
 # if there is a Localizer, copy it to DICOM
@@ -1069,7 +1082,7 @@ while IFS=, read identifier search_string task mb pe_dir acq_label; do
                 "criteria": {  
                     "SeriesDescription": "*'${search_string}'*",
                     "ImageType": [
-                        "ORIGINAL","PRIMARY","PERFUSION","NONE","REAL"
+                        "ORIGINAL","PRIMARY","PERFUSION","NONE"
                     ]}}'
 
             sub_bids_[$bs]=$(echo ${sub_bids_SWI} | python -m json.tool)
@@ -1432,6 +1445,7 @@ if [ ! -d BIDS/.bidsignore ];then
     echo "**/anat/*SWI*" >> .bidsignore
     echo "**/anat/*MTI*" >> .bidsignore
     echo "**/anat/*FGATIR*" >> .bidsignore
+    echo "**/anat/*lesion_roi*" >> .bidsignore
     echo "**/perf/*asl*" >> .bidsignore
     cd ..
 fi
