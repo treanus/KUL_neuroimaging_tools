@@ -667,7 +667,7 @@ function KUL_run_fmriprep {
         rm -f KUL_LOG/sub-${participant}_run_fmriprep.txt.bck
         if [ $n_fMRI -gt 0 ]; then
             #fmriprep_options="--fs-no-reconall --use-aroma --use-syn-sdc "
-            fmriprep_options="--fs-no-reconall --use-syn-sdc "
+            fmriprep_options="--fs-no-reconall --use-aroma --use-syn-sdc "
         else
             fmriprep_options="--fs-no-reconall --anat-only "
         fi
