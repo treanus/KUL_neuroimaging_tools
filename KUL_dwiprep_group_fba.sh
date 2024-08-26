@@ -490,32 +490,35 @@ mkdir -p ../template/mask_input
 
 # declare -a links
 
-templatesubjects_a=(${templatesubjects})
 
-echo ${templatesubjects_a[@]}
 
 if [ ! -f ../template/wmfod_template.mif ]; then
 
     echo "   Generating FOD template"
+    templatesubjects_a=(${templatesubjects})
+    echo ${templatesubjects_a[@]}
 
     # search_sessions=($(find ${cwd}/dwiprep/${group_name}/fba/subjects | grep wmfod_norm.mif | sort ))
     search_sessions=($(ls -f ${cwd}/dwiprep/${group_name}/fba/subjects/*/wmfod_norm.mif | sort ))
+    #echo ${search_sessions[@]}
 
     for t in ${!search_sessions[@]}; do
-
+    #for t in ${search_sessions[@]}; do
         #links[$bb]=1
         # s=$(echo $t | awk -F 'subjects/' '{print $2}' | awk -F '/' '{print $1}')
         s=$(echo ${search_sessions[$t]} | rev | cut -d '/' -f2 | rev)
-        # echo $s
-        # echo $t
+        #echo $s
+        #echo $t
 
         if [ $t_flag -eq 1 ]; then
             # Don't link subjects not given in -t
             for hb in ${!templatesubjects_a[@]}; do
 
                 # echo "${templatesubjects_a[$hb]}"
-              
+                #echo $s
+                #echo ${templatesubjects_a[$hb]}
                 if [[ "${s}" == "${templatesubjects_a[$hb]}" ]]; then
+
 
                     ln -sfn ${search_sessions[$t]} ${cwd}/dwiprep/${group_name}/fba/template/fod_input/${s}_wmfod_norm.mif
             
@@ -537,8 +540,10 @@ if [ ! -f ../template/wmfod_template.mif ]; then
 
     done
 
-    population_template  ../template/fod_input -mask_dir ../template/mask_input ../template/wmfod_template.mif \
-    -voxel_size 1.3 -nthreads $ncpu
+    cmd="population_template  ../template/fod_input -mask_dir ../template/mask_input ../template/wmfod_template.mif \
+    -voxel_size 1.3 -nthreads $ncpu"
+    #echo $cmd
+    eval $cmd
 
 else
 
@@ -740,7 +745,7 @@ fi
 if [ ! -f ../assign_fixels.done ]; then
 
     echo "   Assign subject fixels to template fixels"
-    for_each -force -nthreads ${ncpu_foreach} * : fixelcorrespondence IN/fixel_in_template_space/fd.mif \
+    for_each -force * : fixelcorrespondence IN/fixel_in_template_space/fd.mif \
     ../template/fixel_mask ../template/fd PRE.mif -force
   
     if [ $? -eq 0 ]; then
@@ -762,7 +767,8 @@ fi
 if [ ! -f ../compute_fc.done ]; then
 
     echo "   Compute the fibre cross-section (FC) metric"
-    for_each -force -nthreads ${ncpu_foreach} * : warp2metric IN/subject2template_warp.mif -fc ../template/fixel_mask ../template/fc IN.mif -force
+    for_each -force * : warp2metric IN/subject2template_warp.mif \
+        -fc ../template/fixel_mask ../template/fc IN.mif -force
   
     if [ $? -eq 0 ]; then
         echo "done" > ../compute_fc.done

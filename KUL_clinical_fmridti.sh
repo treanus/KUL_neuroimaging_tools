@@ -1,6 +1,7 @@
 #!/bin/bash
 # Bash shell script to analyse clinical fMRI/DTI
 #
+
 # Requires matlab fmriprep
 #
 # @ Stefan Sunaert - UZ/KUL - stefan.sunaert@uzleuven.be
@@ -40,9 +41,9 @@ Optional arguments:
         2: do automatic tumor extra-axial segmentation and vbg (tumor with T1w, cT1w, T2w and FLAIR)
         3: do vbg with manual mask (tumor but missing one of T1w, cT1w, T2w and FLAIR; 
                     put lesion.nii.gz in RESULTS/sub-{participant}/Lesion)
-        4: clinical fMRI without glioma (cavernoma, epilepsy, etc... cT1w)
-        5: clinical dMRI for DBS of essential tremor (DRT tract)
-        6: cliniacl dMRI for DBS of Parkinson's disease (CSHD pathway)
+        4: dMRI/fMRI without glioma (cavernoma, epilepsy, etc... cT1w)
+        5: dMRI for DBS of essential tremor (DRT tract)
+        6: dMRI for DBS of Parkinson's disease (CSHD pathway)
      -d:  dicom zip file (or directory)
      -s:  scaffold (make a default DICOM and study_config)
      -B:  make a backup and cleanup 
@@ -196,9 +197,12 @@ function KUL_scaffold {
     if [ $type -lt 5 ]; then
         echo "Setting up for a tumor/epilepsy/... patient (type: $type)"
         cp ${kul_main_dir}/study_config/clinical_fmri_dmri/* $cwd/clinical_sub-${participant}_type${type}/study_config
-    else
+    elif [ $type -eq 5 ]; then
         echo "Setting up for a DBS patient (type: $type)"
-        cp ${kul_main_dir}/study_config/clinical_dmri_dbs/* $cwd/clinical_sub-${participant}_type${type}/study_config
+        cp ${kul_main_dir}/study_config/clinical_dmri_dbs_drt/* $cwd/clinical_sub-${participant}_type${type}/study_config
+    elif [ $type -eq 6 ]; then
+        echo "Setting up for a DBS patient (type: $type)"
+        cp ${kul_main_dir}/study_config/clinical_dmri_dbs_hdp/* $cwd/clinical_sub-${participant}_type${type}/study_config
     fi
 
     exit 0
@@ -240,79 +244,62 @@ fi
 # The make RESULTS option
 if [ $results -gt 0 ];then
 
-    if [ $type -lt 5 ];then
+    mrview_tracts[0]="Tract-csd_CST_LT"
+    mrview_rgb[0]="0.678,0.847,0.902"
+    mrview_tracts[1]="Tract-csd_CST_RT"
+    mrview_rgb[1]="0,0,1"
+    mrview_tracts[2]="Tract-csd_AF_all_LT"
+    mrview_rgb[2]="1,0,0"
+    mrview_tracts[3]="Tract-csd_AF_all_RT"
+    mrview_rgb[3]="0,1,0"
+    mrview_tracts[4]="Tract-csd_CCing_LT"
+    mrview_rgb[4]="1,1,0"
+    mrview_tracts[5]="Tract-csd_CCing_RT"
+    mrview_rgb[5]="1,0.647,0"
+    mrview_tracts[6]="Tract-csd_TCing_LT"
+    mrview_rgb[6]="1,1,0"
+    mrview_tracts[7]="Tract-csd_TCing_RT"
+    mrview_rgb[7]="1,0.646,0"
+    mrview_tracts[8]="Tract-csd_FAT_LT"
+    mrview_rgb[8]="1,0.647,0"
+    mrview_tracts[9]="Tract-csd_FAT_RT"
+    mrview_rgb[9]="1,1,0"
+    mrview_tracts[10]="Tract-csd_ILF_LT"
+    mrview_rgb[10]="0,0,1"
+    mrview_tracts[11]="Tract-csd_ILF_RT"
+    mrview_rgb[11]="0.678,0.847,0.784"
+    mrview_tracts[12]="Tract-csd_IFOF_LT"
+    mrview_rgb[12]="0.75,0.25,0.75"
+    mrview_tracts[13]="Tract-csd_IFOF_RT"
+    mrview_rgb[13]="1,0.75,0.8"
+    mrview_tracts[14]="Tract-csd_UF_LT"
+    mrview_rgb[14]="0,0.784,0"
+    mrview_tracts[15]="Tract-csd_UF_RT"
+    mrview_rgb[15]="0.784,0,0"
+    mrview_tracts[16]="Tract-csd_OR_occlobe_LT"
+    mrview_rgb[16]="0.2,0.784,0.4"
+    mrview_tracts[17]="Tract-csd_OR_occlobe_RT"
+    mrview_rgb[17]="0.784,0.2,0.4"
+    mrview_tracts[18]="Tract-csd_MdLF_LT"
+    mrview_rgb[18]="0.6,0.784,0.04"
+    mrview_tracts[19]="Tract-csd_MdLF_RT"
+    mrview_rgb[19]="0.784,0.6,0.04"
+    mrview_tracts[20]="Tract-csd_ML_LT"
+    mrview_rgb[20]="0,0.5,0.04"
+    mrview_tracts[21]="Tract-csd_ML_RT"
+    mrview_rgb[21]="0,0.5,0.5"
 
-        mrview_tracts[0]="Tract-csd_CST_LT"
-        mrview_rgb[0]="0.678,0.847,0.902"
-        mrview_tracts[1]="Tract-csd_CST_RT"
-        mrview_rgb[1]="0,0,1"
-        mrview_tracts[2]="Tract-csd_AF_all_LT"
-        mrview_rgb[2]="1,0,0"
-        mrview_tracts[3]="Tract-csd_AF_all_RT"
-        mrview_rgb[3]="0,1,0"
-        mrview_tracts[4]="Tract-csd_CCing_LT"
-        mrview_rgb[4]="1,1,0"
-        mrview_tracts[5]="Tract-csd_CCing_RT"
-        mrview_rgb[5]="1,0.647,0"
-        mrview_tracts[6]="Tract-csd_TCing_LT"
-        mrview_rgb[6]="1,1,0"
-        mrview_tracts[7]="Tract-csd_TCing_RT"
-        mrview_rgb[7]="1,0.646,0"
-        mrview_tracts[8]="Tract-csd_FAT_LT"
-        mrview_rgb[8]="1,0.647,0"
-        mrview_tracts[9]="Tract-csd_FAT_RT"
-        mrview_rgb[9]="1,1,0"
-        mrview_tracts[10]="Tract-csd_ILF_LT"
-        mrview_rgb[10]="0,0,1"
-        mrview_tracts[11]="Tract-csd_ILF_RT"
-        mrview_rgb[11]="0.678,0.847,0.784"
-        mrview_tracts[12]="Tract-csd_IFOF_LT"
-        mrview_rgb[12]="0.75,0.25,0.75"
-        mrview_tracts[13]="Tract-csd_IFOF_RT"
-        mrview_rgb[13]="1,0.75,0.8"
-        mrview_tracts[14]="Tract-csd_UF_LT"
-        mrview_rgb[14]="0,0.784,0"
-        mrview_tracts[15]="Tract-csd_UF_RT"
-        mrview_rgb[15]="0.784,0,0"
-        mrview_tracts[16]="Tract-csd_OR_occlobe_LT"
-        mrview_rgb[16]="0.2,0.784,0.4"
-        mrview_tracts[17]="Tract-csd_OR_occlobe_RT"
-        mrview_rgb[17]="0.784,0.2,0.4"
-        mrview_tracts[18]="Tract-csd_MdLF_LT"
-        mrview_rgb[18]="0.6,0.784,0.04"
-        mrview_tracts[19]="Tract-csd_MdLF_RT"
-        mrview_rgb[19]="0.784,0.6,0.04"
-        mrview_tracts[20]="Tract-csd_ML_LT"
-        mrview_rgb[20]="0,0.5,0.04"
-        mrview_tracts[21]="Tract-csd_ML_RT"
-        mrview_rgb[21]="0,0.5,0.5"
-        ntracts=22
+    mrview_tracts[22]="Tract-csd_DRT_LT"
+    mrview_rgb[22]="1,0,0.23"
+    mrview_tracts[23]="Tract-csd_DRT_RT"
+    mrview_rgb[23]="0.23,1,0"
 
-    elif [ $type -eq 5 ];then
+    mrview_tracts[24]="Tract-csd_CSHDP_LT"
+    mrview_rgb[24]="0.23,0.12,0"
+    mrview_tracts[25]="Tract-csd_CSHDP_RT"
+    mrview_rgb[25]="1,0.12,0.20"
 
-        mrview_tracts[0]="Tract-csd_CST_LT"
-        mrview_rgb[0]="0.678,0.847,0.902"
-        mrview_tracts[1]="Tract-csd_CST_RT"
-        mrview_rgb[1]="0,0,1"
-        mrview_tracts[2]="Tract-csd_DRT_LT"
-        mrview_rgb[2]="1,0,0.23"
-        mrview_tracts[3]="Tract-csd_DRT_RT"
-        mrview_rgb[3]="0.23,1,0"
-        ntracts=4
-
-    elif [ $type -eq 6 ];then
-
-        mrview_tracts[0]="Tract-csd_CST_LT"
-        mrview_rgb[0]="0.678,0.847,0.902"
-        mrview_tracts[1]="Tract-csd_CST_RT"
-        mrview_rgb[1]="0,0,1"
-        mrview_tracts[2]="Tract-csd_CSHDP_LT"
-        mrview_rgb[2]="0.23,0.12,0"
-        mrview_tracts[3]="Tract-csd_CSHDP_RT"
-        mrview_rgb[3]="1,0.12,0.20"
-        ntracts=4
-
-    fi
+    ntracts=26
 
     #echo "ntracts: $ntracts"
     result_type=0
@@ -365,97 +352,106 @@ if [ $results -gt 0 ];then
 
         mrview_tck=""
         
+        tracts_found=0
         for tract in ${tract_set[@]}; do 
             #echo $tract_set_i
             #echo "$tract ${mrview_rgb[$tract_i]} on $underlay"
             if [ -f $globalresultsdir/Tracto/${tract}.tck ]; then
-                mrview_tck="$mrview_tck -tractography.load $globalresultsdir/Tracto/${tract}.tck -tractography.colour ${mrview_rgb[$tract_i]}"
+                mrview_tck="$mrview_tck -tractography.load $globalresultsdir/Tracto/${tract}.tck \
+                    -tractography.colour ${mrview_rgb[$tract_i]}"
+                tracts_found=$(($tracts_found+1))
             fi
             tract_i=$(($tract_i+1))
         done
         
-        #echo $mrview_tck
+        #echo "mrview_tck: $mrview_tck"
+        echo "tract_i: $tract_i"
+        echo "tracts_found: $tracts_found"
+
+        if [ $tracts_found -gt 0 ]; then 
+
+            ori[0]="TRA"
+            ori[1]="SAG"
+            ori[2]="COR"
+
+            for orient in ${ori[@]}; do
+
+                if [[ "$orient" == "TRA" ]]; then
+                    underlay_slices=$(mrinfo $underlay -size | awk '{print $(NF)}')
+                elif [[ "$orient" == "SAG" ]]; then
+                    underlay_slices=$(mrinfo $underlay -size | awk '{print $(NF-2)}')
+                else
+                    underlay_slices=$(mrinfo $underlay -size | awk '{print $(NF-1)}')
+                fi
+            
+
+                if [ $result_type -eq 0 ]; then
+                    i=0
+                    echo "Making ${tractname}_${orient} on $(basename $underlay)"
+                    mkdir -p $resultsdir_png/${tractname}_${orient}
+                    voxel_index="-capture.folder $resultsdir_png/${tractname}_${orient} \
+                        -capture.prefix ${tractname}_${orient} -noannotations -orientlabel 1"
+                    while [ $i -lt $underlay_slices ]
+                    do
+                        #echo Number: $i
+                        if [[ "$orient" == "TRA" ]]; then
+                            voxel_index="$voxel_index -voxel 0,0,$i -capture.grab"
+                            plane=2
+                        elif [[ "$orient" == "SAG" ]]; then
+                            voxel_index="$voxel_index -voxel $i,0,0 -capture.grab"
+                            plane=0
+                        else
+                            voxel_index="$voxel_index -voxel 0,$i,0 -capture.grab"
+                            plane=1
+                        fi    
+                        let "i+=1" 
+                    done
+                    mode_plane="-mode 1 -plane $plane"
+                    mrview_exit="-exit"
+                else
+                    voxel_index=""
+                    mode_plane="-mode 2"
+                    mrview_exit=""
+                fi
+                #echo $voxel_index
 
 
-        ori[0]="TRA"
-        ori[1]="SAG"
-        ori[2]="COR"
-
-        for orient in ${ori[@]}; do
-
-            if [[ "$orient" == "TRA" ]]; then
-                underlay_slices=$(mrinfo $underlay -size | awk '{print $(NF)}')
-            elif [[ "$orient" == "SAG" ]]; then
-                underlay_slices=$(mrinfo $underlay -size | awk '{print $(NF-2)}')
-            else
-                underlay_slices=$(mrinfo $underlay -size | awk '{print $(NF-1)}')
-            fi
-        
-
-            if [ $result_type -eq 0 ]; then
-                i=0
-                echo "Making ${tractname}_${orient} on $(basename $underlay)"
-                mkdir -p $resultsdir_png/${tractname}_${orient}
-                voxel_index="-capture.folder $resultsdir_png/${tractname}_${orient} \
-                    -capture.prefix ${tractname}_${orient} -noannotations -orientlabel 1"
-                while [ $i -lt $underlay_slices ]
-                do
-                    #echo Number: $i
-                    if [[ "$orient" == "TRA" ]]; then
-                        voxel_index="$voxel_index -voxel 0,0,$i -capture.grab"
-                        plane=2
-                    elif [[ "$orient" == "SAG" ]]; then
-                        voxel_index="$voxel_index -voxel $i,0,0 -capture.grab"
-                        plane=0
-                    else
-                        voxel_index="$voxel_index -voxel 0,$i,0 -capture.grab"
-                        plane=1
-                    fi    
-                    let "i+=1" 
-                done
-                mode_plane="-mode 1 -plane $plane"
-                mrview_exit="-exit"
-            else
-                voxel_index=""
-                mode_plane="-mode 2"
-                mrview_exit=""
-            fi
-            #echo $voxel_index
-
-        
-
-            cmd="mrview -size $mrview_resolution,$mrview_resolution
-                -load $underlay \
-                $mode_plane \
-                -tractography.lighting 1 \
-                -tractography.slab 1.5 \
-                -tractography.thickness 0.3 \
-                $mrview_tck \
-                $voxel_index \
-                -force \
-                $mrview_exit"
-            #echo $cmd
-            eval $cmd
-
-            if [[ "$mrview_exit" = "-exit" ]];then
-                cmd="convert $resultsdir_png/${tractname}_${orient}/${tractname}_${orient}*.png \
-                    $resultsdir_png/${tractname}_${orient}/${tractname}_${orient}.tiff"
+                cmd="mrview -size $mrview_resolution,$mrview_resolution
+                    -load $underlay \
+                    $mode_plane \
+                    -tractography.lighting 1 \
+                    -tractography.slab 1.5 \
+                    -tractography.thickness 0.3 \
+                    $mrview_tck \
+                    $voxel_index \
+                    -force \
+                    $mrview_exit"
                 #echo $cmd
                 eval $cmd
 
-                if [ -f DICOM/smartbrain.dcm ]; then
-                    dcmdir="$resultsdir_dcm/${tractname}_${orient}"
-                    echo "Making dicoms in $dcmdir"
-                    mkdir -p $dcmdir
-                    cmd="KUL_nii2dcm.py -s ${tractname}_${orient} \
-                        $resultsdir_png/${tractname}_${orient}/${tractname}_${orient}.tiff \
-                        DICOM/smartbrain.dcm \
-                        $dcmdir"
-                    echo $cmd
+                if [[ "$mrview_exit" = "-exit" ]];then
+                    cmd="convert $resultsdir_png/${tractname}_${orient}/${tractname}_${orient}*.png \
+                        $resultsdir_png/${tractname}_${orient}/${tractname}_${orient}.tiff"
+                    #echo $cmd
                     eval $cmd
+
+                    if [ -f DICOM/smartbrain.dcm ]; then
+                        dcmdir="$resultsdir_dcm/${tractname}_${orient}"
+                        echo "Making dicoms in $dcmdir"
+                        mkdir -p $dcmdir
+                        cmd="KUL_nii2dcm.py -s ${tractname}_${orient} \
+                            $resultsdir_png/${tractname}_${orient}/${tractname}_${orient}.tiff \
+                            DICOM/smartbrain.dcm \
+                            $dcmdir"
+                        echo $cmd
+                        eval $cmd
+                    fi
                 fi
-            fi
-        done
+            done
+        
+        else
+            echo "No ${tractname} found"
+        fi
     
     done
 
@@ -670,6 +666,7 @@ function KUL_run_fmriprep {
         sed -i.bck "s/BIDS_participants: /BIDS_participants: ${participant}/" KUL_LOG/sub-${participant}_run_fmriprep.txt
         rm -f KUL_LOG/sub-${participant}_run_fmriprep.txt.bck
         if [ $n_fMRI -gt 0 ]; then
+            #fmriprep_options="--fs-no-reconall --use-aroma --use-syn-sdc "
             fmriprep_options="--fs-no-reconall --use-aroma --use-syn-sdc "
         else
             fmriprep_options="--fs-no-reconall --anat-only "
@@ -903,10 +900,17 @@ function KUL_segment_tumor {
             if [ -f $lesion_png ]; then
                 cp -f $lesion_png REPORT/sub-${participant}_01_tumor_segment.png
             fi
-        else
-            echo "Tumor segmentation already done"
+            if [ $vbg -gt 0 ]; then
+                if [ $vbg -eq 1 ]; then
+                    vbg_lesion="$derivativesdir/KUL_anat_segment_tumor/sub-${participant}_lesion_and_cavity.nii.gz"
+                elif [ $vbg -eq 2 ]; then
+                    vbg_lesion="$derivativesdir/KUL_anat_segment_tumor/sub-${participant}_lesion_and_cavity.nii.gz"
+                elif [ $vbg -eq 3 ]; then
+                    vbg_lesion="${cwd}/RESULTS/sub-${participant}/Lesion/lesion.nii.gz"
+                fi
+                cp $vbg_lesion BIDS/sub-${participant}/anat/sub-${participant}_T1w_label-lesion_roi.nii.gz
+            fi
         fi
-
     fi
 
 }
@@ -1010,7 +1014,10 @@ function KUL_run_FWT {
             -n $ncpu"
             KUL_task_exec $verbose_level "KUL_FWT voi generation" "12_FWTvoi"
 
-            eval "$(conda shell.bash hook)"
+            conda deactivate
+            # eval "$(conda shell.bash hook)"
+            # seems like best practice is to specify abs path to conda and source that explicitly 
+            source /usr/local/KUL_apps/anaconda3/etc/profile.d/conda.sh
             conda activate scilpy
             task_in="KUL_FWT_make_TCKs.sh -p ${participant} \
             -F $cwd/BIDS/derivatives/freesurfer/sub-${participant}/mri/aparc+aseg.mgz \
