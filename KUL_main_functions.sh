@@ -1,10 +1,10 @@
 #!/bin/bash
 # Bash shell script to:
-#  - define global functions used by all /DATA/fmri_pats/BIDS/derivatives/KUL_compute/sub-Casier/FastSurfer/sub-Casier/scripts/lh.processing.cmdfsub-scripts
+#  - define global functions 
 #  - define defaults
 #  - execute startup
 #
-# @ prof.sunaert@gmail.com - v0.2 - 18/11/2021
+# @ stefan.sunaertt@kuleuven.be - v0.2 - 18/11/2021
 
 
 # MAIN FUNCTION - Function task_exec ###################################################################################
