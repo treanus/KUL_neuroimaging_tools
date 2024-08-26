@@ -9,12 +9,13 @@
 # @ Stefan Sunaert - UZ/KUL - stefan.sunaert@uzleuven.be
 # @ Ahmed Radwan - KUL - ahmed.radwan@kuleuven.be
 #
-version="v0.9 - dd 29/11/2021"
+version="v1.0 - dd 24/10/2023"
 
 # Notes
 #  - NOW USES https://github.com/UNFmontreal/Dcm2Bids
 #  - works for GE/Siemens/Philips
 #  - wrap around for multiple subjects: use KUL_multisubjects_dcm2bids
+#  - latest update fixed a bug with session naming (space was being inserted as part of session name, i.e. ses- 01)
 export LANG=us.UTF-8
 
 # -----------------------------------  MAIN  ---------------------------------------------
@@ -705,7 +706,7 @@ else
         ;;
         s) #session
             sess_flag=1
-            sess=$OPTARG
+            sess=${OPTARG/ /}
         ;;
         a) #pydeface
             anon=1
@@ -1437,14 +1438,18 @@ if [ ! -d BIDS/.bidsignore ];then
 fi
 
 if [ $sess_flag -eq 1 ]; then
-    dcm2bids_session=" -s ${sess} "
+    dcm2bids_flag="-s"
+    dcm2bids_session="${sess/ /}"
 else
+    dcm2bids_flag=""
     dcm2bids_session=""
 fi
 
-dcm2bids  -d "${tmp}" -p $subj $dcm2bids_session -c $bids_config_json_file \
-    -o $bids_output -l DEBUG --clobber --forceDcm2niix > $dcm2niix_log_file
+echo "dcm2bids  -d "${tmp}" -p $subj ${dcm2bids_flag} ${dcm2bids_session} -c $bids_config_json_file \
+    -o $bids_output -l DEBUG --clobber --forceDcm2niix > $dcm2niix_log_file"
 
+dcm2bids  -d "${tmp}" -p $subj ${dcm2bids_flag} ${dcm2bids_session} -c $bids_config_json_file \
+    -o $bids_output -l DEBUG --clobber --forceDcm2niix > $dcm2niix_log_file
 
 # Multi Echo func needs extra work. dcm2bids does not convert these correctly. "run" needs to be "echo"
 

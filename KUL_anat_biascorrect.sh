@@ -54,6 +54,7 @@ verbose_level=1
 # Set required options
 p_flag=0
 d_flag=0
+s_flag=0
 
 if [ "$#" -lt 1 ]; then
 	Usage >&2
@@ -61,13 +62,17 @@ if [ "$#" -lt 1 ]; then
 
 else
 
-	while getopts "p:v:" OPT; do
+	while getopts "p:v:s:" OPT; do
 
 		case $OPT in
 		p) #participant
 			participant=$OPTARG
             p_flag=1
 		;;
+        s) #session
+			session=$OPTARG
+            s_flag=1
+        ;;
         t) #type
 			type=$OPTARG
 		;;
@@ -98,6 +103,15 @@ if [ $p_flag -eq 0 ] ; then
 	echo "Option -p is required: give the BIDS name of the participant." >&2
 	echo
 	exit 2
+fi
+
+if [ $s_flag -eq 1 ] ; then
+
+    echo
+    echo "Option -s $session is specified"
+    echo
+    participant="${participant}/ses-${session}"
+
 fi
 
 KUL_LOG_DIR="KUL_LOG/${script}/sub-${participant}"

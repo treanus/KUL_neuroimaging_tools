@@ -285,7 +285,8 @@ function KUL_rigid_register {
     --convergence [1000x500x250x100,1e-6,10] \
     --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
     #echo "Done rigidly registering $source_mri to $target_mri"
-
+    ConvertTransformFile 3 ${registeroutputdir}/${source_mri_label}_reg2_${target_mri_label}0GenericAffine.mat \
+        ${registeroutputdir}/${source_mri_label}_reg2_${target_mri_label}0GenericAffine.txt
 }
 
 function KUL_affine_register {
@@ -303,7 +304,8 @@ function KUL_affine_register {
     --convergence [1000x500x250x100,1e-6,10] \
     --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
     #echo "Done rigidly registering $source_mri to $target_mri"
-
+    ConvertTransformFile 3 ${registeroutputdir}/${source_mri_label}_reg2_${target_mri_label}0GenericAffine.mat \
+        ${registeroutputdir}/${source_mri_label}_reg2_${target_mri_label}0GenericAffine.txt
 }
 
 function KUL_warp2MNI {
@@ -348,6 +350,9 @@ function KUL_warp2MNI {
     my_cmd="antsRegistrationSyN.sh -d 3 -f ${target_mri2} -m ${source_mri2} \
         -o ${outputwarp} -n ${ncpu} -j 1 -t s $fs_silent"
     eval $my_cmd
+    
+    ConvertTransformFile 3 ${outputwarp}0GenericAffine.mat \
+        ${outputwarp}0GenericAffine.txt
 
     antsApplyTransforms -d $dim -i ${source_mri2} -r ${target_mri2} -n BSpline  \
         -t ${outputwarp}1Warp.nii.gz -t ${outputwarp}0GenericAffine.mat -o ${outputwarp}.nii.gz

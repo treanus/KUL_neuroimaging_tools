@@ -29,7 +29,7 @@ import nibabel as nib
 import numpy as np
 from scipy import ndimage
 
-# define main input function here
+# define main input function here1
 def main(argv):
     ilog = ''
     inii = ''

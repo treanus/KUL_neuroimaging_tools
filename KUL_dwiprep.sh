@@ -9,6 +9,9 @@
 # v0.1 - dd 09/11/2018 - created
 version="v1.3 - dd 27/11/2021"
 
+# temp var
+mb=2
+
 # To Do
 #  - fod calc msmt-5tt in stead of dhollander
 
@@ -639,7 +642,7 @@ for current_session in `seq 0 $(($num_sessions-1))`; do
 
 			task_in2="dwimotioncorrect dwi/degibbs.mif shard/postmc-mssh.mif $shard_fieldmap \
 				-mask dwi/dwi_orig_mask.nii.gz \
-				$lmax $rlmax -mb 3 -sorder 1,0 -export_motion shard/motion.txt -export_weights shard/sliceweights.txt \
+				$lmax $rlmax -mb ${mb} -sorder 1,0 -export_motion shard/motion.txt -export_weights shard/sliceweights.txt \
 				-force -nocleanup -nthreads $ncpu"
 			
 
