@@ -5,6 +5,7 @@
 #  - execute startup
 #
 # @ stefan.sunaertt@kuleuven.be - v0.2 - 18/11/2021
+#   update 26/08/2024
 
 
 # MAIN FUNCTION - Function task_exec ###################################################################################
@@ -270,7 +271,10 @@ function KUL_task_exec {
 
 }
 
+function KUL_activate_conda_env (
 
+    
+)
 
 # MAIN FUNCTION - kul_echo ######################################################################################
 # echo loud or silent
