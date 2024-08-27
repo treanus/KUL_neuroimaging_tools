@@ -4,7 +4,7 @@
 #  - define defaults
 #  - execute startup
 #
-# @ stefan.sunaertt@kuleuven.be - v0.2 - 18/11/2021
+# @ stefan.sunaert@kuleuven.be - v0.2 - 18/11/2021
 #   update 26/08/2024
 
 
@@ -271,10 +271,31 @@ function KUL_task_exec {
 
 }
 
-function KUL_activate_conda_env (
 
+# Function to check if a Conda environment is activated
+function is_conda_env_activated() {
+    # Check if the current environment name matches the desired one
+    [[ "$CONDA_DEFAULT_ENV" == "$ENV_TO_ACTIVATE" ]]
+}
+
+function KUL_activate_conda_env {
+    # function to activate a certain conda env
+    # if the base is active activate the requeste one
+    # if another is active, go back to base
+    echo $ENV_TO_ACTIVATE
+
+    # Check if the desired Conda environment is activated
+    if ! is_conda_env_activated; then
+        echo "Activating the Conda environment: $ENV_TO_ACTIVATE"
+        # Activate the environment
+        source activate "$ENV_TO_ACTIVATE"
+        ACTIVATED=true
+    else
+        echo "Conda environment $ENV_TO_ACTIVATE is already activated."
+        ACTIVATED=false
+    fi
     
-)
+}
 
 # MAIN FUNCTION - kul_echo ######################################################################################
 # echo loud or silent
