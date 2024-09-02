@@ -155,13 +155,13 @@ function KUL_mrview {
 
     cmd="mrview \
         $mrview_underlay \
-        $mrview_mode \
         $mrview_plane \
+        $mrview_mode \
         $mrview_overlay \
         $mrview_annotations \
         $mrview_capture \
         $mrview_exit"
-    #echo $cmd
+    echo $cmd
     eval $cmd
 
 }

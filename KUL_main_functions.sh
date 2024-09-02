@@ -282,7 +282,10 @@ function KUL_activate_conda_env {
     # function to activate a certain conda env
     # if the base is active activate the requeste one
     # if another is active, go back to base
-    echo $ENV_TO_ACTIVATE
+    echo "Current conda env: $CONDA_DEFAULT_ENV"
+    echo "Available environments:"
+    conda info --envs
+    echo "Conda asked to activate: $ENV_TO_ACTIVATE"
 
     # Check if the desired Conda environment is activated
     if ! is_conda_env_activated; then
