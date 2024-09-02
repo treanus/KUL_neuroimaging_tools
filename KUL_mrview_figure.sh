@@ -228,6 +228,26 @@ fi
 #echo "mrview_overlay: $mrview_overlay"
 #echo "base_overlay: $base_overlay"
 
+# Make sure the overlay exists
+string=$mrview_overlay  # Replace this with your actual string
+
+# Extract and check all instances of -overlay.load
+while [[ $string =~ -overlay\.load\ ([^[:space:]]+) ]]; do
+    overlay_search="${BASH_REMATCH[1]}"
+    
+    # Check if overlay_search exists as a file on disk
+    if [[ -f "$overlay_search" ]]; then
+        echo "overlay_search exists as a file: $overlay_search"
+    else
+        echo "$overlay_search does not exist. Quitting."
+        exit 1
+    fi
+
+    # Remove the processed part of the string to find the next match
+    string=${string#*-overlay.load $overlay_search}
+done
+
+
 
 # Check out file name
 if [ -z $output_file ]; then
