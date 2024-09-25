@@ -1845,7 +1845,7 @@ if [ ! -f $mriqc_file_to_check ]; then
     docker run -u $(id -u) --tmpfs /run --tmpfs /tmp --rm \
         -v ${cwd}/mriqc_home:/home/bidsapp/ \
         -v ${cwd}/${bids_dir}:/data -v ${cwd}/mriqc:/out \
-        poldracklab/mriqc:latest \
+        nipreps/mriqc:${mriqc_version} \
         /data /out group
     rm -rf ${cwd}/mriqc_home  
 else
