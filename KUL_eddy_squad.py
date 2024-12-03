@@ -12,6 +12,8 @@ import seaborn as sns
 def read_json_files(folder_path):
     json_files = [pos_json for pos_json in os.listdir(folder_path) if pos_json.endswith('.json')]
 
+    print(json_files)
+    
     jsons_data = pd.DataFrame(columns=[
         'qc_mot_abs', 'qc_mot_rel', 'qc_cnr_avg', 'qc_cnr_std', 'qc_outliers_tot', 
         'qc_params_avg', 'qc_s2v_params_avg_std', 'qc_vox_displ_std', 'subject_id'
