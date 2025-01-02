@@ -13,10 +13,13 @@ display_menu() {
 }
 
 # Read files in the directory with the specified extension and store them in an array
-files=()
+files0=()
 while IFS= read -r -d '' file; do
-    files+=("$file")
+    files0+=("$file")
 done < <(find "$directory" -type f -name "*$extension" -print0)
+
+# Sort the files
+IFS=$'\n' files=($(sort -n <<<"${files0[*]}"))
 
 # Display the menu
 echo "Files with extension '$extension' in the directory:"
