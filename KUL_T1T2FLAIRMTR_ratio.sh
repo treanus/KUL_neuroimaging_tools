@@ -329,7 +329,10 @@ function KUL_apply_warp2mni {
 
     if [[ ${td} == "T1w" ]];then
         local ext=""
-    elif [[ ! ${td} == "MTI" ]];then
+         input="$outdir/${base}_${td}${ext}.nii.gz"
+        output="$outdir/${base}_space-MNI_${td}${ext}.nii.gz"
+        KUL_antsApply_Transform_MNI
+    elif [[ ! ${td} == "MTI" && ! ${td} == "LESION" ]];then
         local ext="_reg2T1w"
         input="$outdir/${base}_ratio-T1${td}_calib-none.nii.gz"
         output="$outdir/${base}_space-MNI_ratio-T1${td}_calib-none.nii.gz"
@@ -353,11 +356,13 @@ function KUL_apply_warp2mni {
         input="$outdir/${base}_ratio-MTC.nii.gz"
         output="$outdir/${base}_space-MNI_ratio-MTC.nii.gz"
         KUL_antsApply_Transform_MNI
+    elif [[ ${td} == "LESION" ]]; then
+        local ext=""
+        input=$MSlesion
+        output="$outdir/${base}_space-MNI_MSlesion.nii.gz"
+        KUL_antsApply_Transform_MNI
     fi
 
-    input="$outdir/${base}_${td}${ext}.nii.gz"
-    output="$outdir/${base}_space-MNI_${td}${ext}.nii.gz"
-    KUL_antsApply_Transform_MNI
 }
 
 function KUL_MTI_register_computeratio {
@@ -586,7 +591,11 @@ for test_T1w in ${T1w[@]}; do
                                 --t1 $test_T1w \
                                 --seg_only --py python --ignore_fs_version --threads $ncpu $fs_silent"
                         fi
+
+                        KUL_activate_conda_env fastsurfer_gpu
                         eval $my_cmd
+
+                        KUL_activate_conda_env base
                     else
                         echo "  fastsurfer seems to have run already"
                     fi
@@ -600,8 +609,11 @@ for test_T1w in ${T1w[@]}; do
                             echo "  running samseg (takes about 20 minutes)"
                             T1w_iso="$outdir/tmp/${base}_T1w_iso_biascorrected.nii.gz"
                             FLAIR_reg2T1w="$outdir/tmp/${base}_FLAIR_iso_biascorrected_reg2T1w.nii.gz"
-                            my_cmd="run_samseg --input $T1w_iso $FLAIR_reg2T1w --pallidum-separate \
-                            --lesion --lesion-mask-pattern 0 1 --output $outdir/samseg \
+                            #my_cmd="run_samseg --input $T1w_iso $FLAIR_reg2T1w --pallidum-separate \
+                            #--lesion --lesion-mask-pattern 0 1 --output $outdir/samseg \
+                            #--threads $ncpu $fs_silent"
+                            my_cmd="run_samseg --input $T1w_iso $FLAIR_reg2T1w \
+                            --lesion --lesion-mask-pattern 0 1 --output $outdir/samseg --threshold 0.2 \
                             --threads $ncpu $fs_silent"
                             eval $my_cmd
                             SamSeg="$outdir/samseg/seg.mgz"
@@ -617,13 +629,14 @@ for test_T1w in ${T1w[@]}; do
                 # PART 6 - hd-bet and background search
                 if [ $deel -ge 6 ];then
                     # hd-bet brain extraction of the T1w
-                    
                     if [ ! -f $outdir/tmp/${base}_T1w_iso_biascorrected_brain.nii.gz ]; then 
                         echo "  doing hd-bet on ${base}_T1w_iso_biascorrected.nii.gz"
                         my_cmd="hd-bet -i $outdir/tmp/${base}_T1w_iso_biascorrected.nii.gz \
-                        -o $outdir/tmp/${base}_T1w_iso_biascorrected_brain.nii.gz $fs_silent"
+                        -o $outdir/tmp/${base}_T1w_iso_biascorrected_brain.nii.gz \
+                        --save_bet_mask $fs_silent"
                         eval $my_cmd
-                        mv $outdir/tmp/${base}_T1w_iso_biascorrected_brain_mask.nii.gz $outdir/masks
+                        mv $outdir/tmp/${base}_T1w_iso_biascorrected_brain_bet.nii.gz \
+                            $outdir/masks/${base}_T1w_iso_biascorrected_brain_mask.nii.gz
                     else
                         echo "  skipping hd-bet on ${base}_T1w_iso_biascorrected.nii.gz - already done"
                     fi
@@ -971,6 +984,11 @@ for test_T1w in ${T1w[@]}; do
                     
                     if [ $mti -eq 1 ];then
                         td="MTI"
+                        KUL_apply_warp2mni
+                    fi
+                    MSlesion="$outdir/rois/${base}_MSLesion.nii.gz"
+                    if [ -f $MSlesion ]; then
+                        td="LESION"
                         KUL_apply_warp2mni
                     fi
                 fi              

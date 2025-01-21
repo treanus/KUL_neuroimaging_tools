@@ -279,6 +279,7 @@ function is_conda_env_activated() {
 }
 
 function KUL_activate_conda_env {
+    ENV_TO_ACTIVATE=$1
     # function to activate a certain conda env
     # if the base is active activate the requeste one
     # if another is active, go back to base
@@ -290,9 +291,14 @@ function KUL_activate_conda_env {
     # Check if the desired Conda environment is activated
     if ! is_conda_env_activated; then
         echo "Activating the Conda environment: $ENV_TO_ACTIVATE"
+        if [[ $ENV_TO_ACTIVATE == 'base' ]]; then 
+            echo "Switching back to the base Conda environment: $ENV_TO_ACTIVATE"
+            conda deactivate
+        else
         # Activate the environment
-        source activate "$ENV_TO_ACTIVATE"
-        ACTIVATED=true
+            source activate "$ENV_TO_ACTIVATE"
+            ACTIVATED=true
+        fi
     else
         echo "Conda environment $ENV_TO_ACTIVATE is already activated."
         ACTIVATED=false
