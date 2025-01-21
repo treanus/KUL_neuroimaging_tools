@@ -52,7 +52,7 @@ Optional arguments:
             2: affine
             3: elastic using antsRegistrationSyn (same as -w option, kept for compatibility)
      -d:  output directory
-     -i:  interpolation type (1=BSpline, 2=NearestNeighbor; default=1)
+     -i:  interpolation type (1=BSpline, 2=NearestNeighbor, 3=Linear; default=1)
      -o:  apply the transformation to other images (put these between "")
      -n:  number of cpu to use (default 15)
      -v:  show output from commands (0=silent, 1=normal, 2=verbose; default=1)
@@ -172,6 +172,8 @@ if [ $interpolation -eq 1 ]; then
     interpolation_type="BSpline"
 elif [ $interpolation -eq 2 ]; then
     interpolation_type="NearestNeighbor"
+elif [ $interpolation -eq 3 ]; then
+    interpolation_type="Linear"
 fi
 
 KUL_LOG_DIR="KUL_LOG/${script}/sub-${participant}"
